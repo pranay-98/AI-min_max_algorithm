@@ -1,117 +1,139 @@
-<h1> Problem1- The 2021 Puzzle </h1>
+## Approach to Part 1: Raichu
+<h2>Problem Statement</h2>
+<p>Raichu is a popular childhood game played on an n ×n grid (where n ≥ 8 is an even number) with three
+kinds of pieces (Pichus, Pikachus, and Raichus) of two different colors (black and white). Initially the board
+starts empty, except for a row of white Pichus on the second row of the board, a row of black Pichus on the
+third row of the board, and a row of black Pichus on row n −2 and a row of black Pikachus on row n −1:</p>
 
-<h3> Files to Reffer : solver2021.py<h3>
+<p>Two players alternate turns, with White going first.
+In any given turn, a player can choose a single piece of their color and move it according to the rules of that
+piece.
+A Pichu can move in one of two ways:
+1. one square forward diagonally, if that square is empty.
+2. jump over a single Pichu of the opposite color by moving two squares forward diagonally, if that
+square is empty. The jumped piece is removed from the board as soon as it is jumped.</p>
 
-<h3> Problem Statement <h3>
+<p>A Pikachu can move in one of two ways:
+1. 1 or 2 squares either forward, left, or right (but not diagonally) to an empty square, as long as all
+squares in between are also empty.
+2. jump over a single Pichu/Pikachu of the opposite color by moving 2 or 3 squares forward, left or
+right (not diagonally), as long as all of the squares between the Pikachu's start position and jumped
+piece are empty and all the squares between the jumped piece and the ending position are empty. The
+jumped piece is removed as soon as it is jumped.</p>
 
-Consider the 2021 puzzle, which is a lot like the 15-puzzle we talked about in class, but: (1) it has 25 tiles, so
-there are no empty spots on the board (2) instead of moving a single tile into an open space, a move in this
-puzzle consists of either (a) sliding an entire row of tiles left or right one space, with the left- or right-most
-tile 'wrapping around' to the other side of the board, (b) sliding an entire column of tiles up or down one
-space, with the top- or bottom-most tile 'wrapping around' to the other side of the board, (c) rotating the
-outer 'ring' of tiles either clockwise or counterclockwise, or (d) rotating the inner ring either clockwise or
-counterclockwise.
+<p>A Raichu is created when a Pichu or Pikachu reaches the opposite side of the board (i.e. when a Black
+Pichu or Pikachu reaches row 1 or a white Pichu or Pikachu reaches row n). When this happens, the Pichu
+or Pikachu is removed from the board and subsituted with a Raichu. Raichus can move as follows:
+1. any number of squares forward/backward, left, right or diagonally, to an empty square, as long as all
+squares in between are also empty.
+2. jump over a single Pichu/Pikachu/Raichu of the opposite color and landing any number of squares
+forward/backward, left, right or diagonally, as long as all of the squares between the Raichu's start
+position and jumped piece are empty and all the squares between the jumped piece and the ending
+position are empty. The jumped piece is removed as soon as it is jumped.</p>
 
-The goal of the puzzle is to find a short sequence of moves that restores the canonical configuration (on the
-left above) given an initial board configuration. 
+<h2>Abstraction:</h2><br><br>
+<b>Set of Valid States: </b>
+<p>All legal moves made by the player's pichu(w/b) , pikachu(W,B) and raichu(@,$).</p><br><br>
+<b>Successor Function:</b>
+<p>This function takes board as a parameter and return the list of legal possible moves of the player pieces by validating all scenarios.</p><br><br>
+<b>Cost Function:</b>
+<p>Cost of generating legal move for the pieces available is uniform.</p><br><br>
+<b>Goal State:</b>
+<p>The goal state, according to the problem statement, is the best possible legal move for the board that maximizes the likelihood of a player winning within a defined timeframe.</p><br><br>
+<b>Initial State:</b>
+<p>Board consiting of pieces of two players to determine possible next move.</p><br><br>
 
-where input-board-filename is a text file containing a board configuration (we have provided an example).
-You'll need to complete the function called solve(), which should return a list of valid moves. The moves
-should be encoded as strings in the following way:
-
-1. For sliding rows, R (right) or L (left), followed by the row number indicating the row to move left or
-right. The row numbers range from 1-5.
-
-2. For sliding columns, U (up) or D (down), followed by the column number indicating the column to move
-up or down. The column numbers range from 1-5.
-
-3. For rotations, I (inner) or O (outer), followed by whether the rotation is clockwise (c) or counterclock-
-wise (cc).
-
-For example, the above diagram performs the moves L3 (slide row 3 left), D3 (slide column 3 down), Occ
-(outer counterclockwise), and Ic (inner clockwise).
-
-<h3> Abstraction </h3>
-
-1. State Space: All possible arrangements of board with numbers 1 to 25.
-2. Initial State: Any arrangement of board with numbers 1 to 25 on it.
-3. Successor Function: Sliding the rows left,Sliding the rows right,Sliding the columns Up,Sliding the columns Down,Inner Rotation clockwise,Inner Rotation counter-clockwise,Outer Rotation clockwise,Outer Rotation counter-clockwise.
-Set of valid moves {'R1','R2','R3','R4','R5','L1','L2','L3','L4','L5','U1','U2','U3','U4','U5','D1','D2','D3','D4','D5','Oc','Ic','Occ','Icc'}
-4. Goal State: The correct arrengement of the numbers 1 to 25 on the board with the least possible number of moves.	
-5. Cost: Increment by 1 for each action performed.
-6. Heuristic: The distance between the tile and its position in the goal state(Manhattan distance).
-
-In this problem, given a board of numbers from 1 to 25 which are placed in a random order, we need to find a sequence of moves that will restore the canonical configuration of the board(numbers in correct order).
-Our approach to this problem was - Initially, we consider all possible successors to the initial state and calculate the f-score for each of the child. This f-score is given by the sum of h-score(heuristic) and step cost(no. of steps) taken to reach the particular child. Then we add these child nodes, its f-scores, the sequence of moves followed to reach that child node into the fringe. Our fringe is a priority queue and the highest priority is given to the child which has the least f-score. Next, we pop this child with least f-score and expand this child node and start entering its child nodes into the fringe. This process is continued until we find our goal state.
-
-<h3> Our Approach to the solution: </h3>
-
-We implemented Uniform Cost Search with Heuristic function which is A*. 
-We implemented the 'No.of misplaced tiles' as our heuristic. This heuristic is not admissible since it is over-estimating for all the boards( For example,
-by using no.of misplaced tiles would calculate the number of misplaced tiles as 6 but the board can be solved in one step, then it is over-estimating) 
-We finalized 'Manhattan Distance' as our heuristic which is also not admissible but performing better than the previous heuristic.	
-
-<h3>Additional Questions:</h3>
-Question 1: In this problem, what is the branching factor of the search tree?
-Answer: The branching factor will be 24
-
-Question 2: If the solution can be reached in 7 moves, about how many states would we need to explore before we found it if we used BFS instead of A* search?
-Answer: The branching factor if we used BFS would be 
-&sum;<sub>k=0</sub><sup>N</sup>24<sup>K</sup>
+<b>Description of Successor Function:</b><br>
+<p>It takes board as a parameter.</p><br>
+<b>Valid Pichu moves:</b>
+<ol>
+<li>Pichu can travel diagonally forward, i.e. left and right for one step which should be empty.</li>
+<li>Furthermore, pichu can jump over other player single pichu, eliminating them from the board, and placing our pichu on the second step, which should be empty.</li>
+</ol><br>
+<b>Valid Pikachu moves:</b>
+<ol>
+<li>Pikachu can travel forward, left and right for one and two steps which should be empty.</li>
+<li>Furthermore, Pikachu can jump over other player's single Pichu or Pikachu, eliminating them from the board, and placing our pikachu on second and third step, which should be empty.</li>
+</ol><br>
+<b>Valid Raichu Moves:</b>
+<ol>
+<li>Raichu is generated in the board whenever pichu or pikachu reaches the oppsoite end of the board.</li>
+<li>Raichu can travel forward,left,right and diagonally as long as empty squares.</li>
+<li>Furthermore, raichu can jump over other player's single Pichu,Pikachu and raichu as well, eliminating them from the board, and placing our raichu on any sqaure as long as empty sqaures in between.</li>
+</ol>
+<br>
+<p>Based on the above rules, player generates all the legal moves and add them into the list which will be used to generate best possible move using min max algorithm.</p><br><br> 
 
 
+<b>Description of Algorithm:</b><br>
+<p>Implemented the <b>MIN-MAX</b> Algorithm along with <i>alpha-beta pruning</i> to disregard some states in order to determine the best next move for the given board.</p><br>
+<ol>
+<li>This algorithm takes (board,depth,maxplayer as boolean value,alpha,beta) values and returns the max move after exploring specified depth.</li>
+<li>Algorithm creates a recursive tree starting with max moves and min moves recursively for specified depth and when it reaches the leaf node, evaluation function is invoked to calculate the score of the leaf board.</li>
+<li>Using this algorithm, determines the optimal move among all the possible moves which increases the chance of winning by exploring the opponent's move by the move we make in recursive manner by minimizing their chance of winning and after certain depth evaluates the score of the leaf board and by bottom up approach takes the min score and gives to their parent board and max score of those will be given to their parent.when this reaches to the root move, we get the max move out of all the possible moves which can be safe and increase our chance of winning game.</li>
+<li>We use alpha beta pruning, for ignoring some of the states which may not lead to the solution by expanding those moves.So we check alpha and beta everytime we expand, such that when beta value is less than the max value of min boards explored we ignore expanding those moves in same level.
+Similarly when the alpha value is greater than the min value of max boards explored we ignore expanding that moves in same level.</li>
+</ol>
 
-<h1> Problem2- Road Trip</h1>
+<bR><br>
 
-<h3> Files to Reffer : route.py<h3>
+<b>Evaluation Function:</b>
+<br>
+<ol>
+<li>Calculating the difference between left over pieces on board of each player.</li>
+<li>Along with the above one, assigned some weights for pieces such that some pieces get more preference when they are present on board.
+Calculating the weighted difference between left over pieces on board of each player.</li>
+<li>Weights Assigned are:
+<ul>
+<li><b>Pichu:</b>1</li>
+<li><b>Pikachu:</b> 10</li>
+<li><b>Raichu:</b> 50 </li>
+</ul></li></ol><br><br>
 
-<h3> Problem Statement <h3>
+<p>Increasing depth everytime for minmax algorithm starting from 1, since there is a time limit by which the program gets killed.Thought of having atleast one move before exceeding the timelimit. So used this approach iteratively.</p><br>
+<p>It was nice experience playing with AI on tank server ended in couple of draws and win.</p>
 
-It's not too early to start planning a post-pandemic road trip! If you stop and think about it, finding the
-shortest driving route between two distant places  say, one on the east coast and one on the west coast of
-the U.S.  is extremely complicated. There are over 4 million miles of roads in the U.S. alone, and trying
-all possible paths between two places would be nearly impossible. So how can mapping software like Google
-Maps find routes nearly instantly? The answer is A* search!
-We've prepared a dataset of major highway segments of the United States (and parts of southern Canada
-and northern Mexico), including highway names, distances, and speed limits; you can visualize this as a
-graph with nodes as towns and highway segments as edges. We've also prepared a dataset of cities and
-towns with corresponding latitude-longitude positions. Your job is to find good driving directions between
-pairs of cities given by the user.
 
-where:
-1. start-city and end-city are the cities we need a route between.
-2. cost-function is one of:
-     segments tries to find a route with the fewest number of road segments (i.e. edges of the graph).
-     distance tries to find a route with the shortest total distance.
-     time finds the fastest route, assuming one drives the speed limit.
-     delivery finds the fastest route, in expectation, for a certain delivery driver. Whenever this
-driver drives on a road with a speed limit ≥50 mph, there is a chance that a package will fall out
-of their truck and be destroyed. They will have to drive to the end of that road, turn around,
-return to the start city to get a replacement, then drive all the way back to where they were (they
-won’t make the same mistake the second time they drive on that road).
-Consequently, this mistake will add an extra 2 *(troad + ttrip) hours to their trip, where ttrip is the
-time it took to get from the start city to the beginning of the road, and troad is the time it takes
-to drive the length of the road segment.
-For a road of length l miles, the probability p of this mistake happening is equal to tanh (l/1000)
-if the speed limit is ≥ 50 mph, and 0 otherwise.1 This means that, in expectation, it will take
-troad + p ·2(troad + ttrip) hours to drive on this road.
+## Approach to Part 3: Truth be Told
 
-<h3> Abstraction </h3>
+<h3>Problem statement<h3>
 
-1. State Space : All valid cities which have a segment from a given city1
-2. Initial State: Start city which is valid and present in road-segments.txt and city-gps.txt  
-3. Successor Function: Traversing to all the adjacent cities from the initial city where there is a road segment between them.
-4. Goal State: Reaching the End City
-5. Cost: There are 4 cost functions: segments(route with fewer number of road segments), distance(route with shortest total distance), time(fastest route within the speed limit), delivery(if the speed limit between 2 cities is greater than or equal to 50 mph then there is a probablity of making a mistake which is given by tanh(l/1000 and total hours to drive would be t_road+p*2(t_road+t_trip) or probablity of mistake will be zero and time taken will be equal to t_road)
-6. Heuristic: Great Circle Distance(To find the distance between any two points on the earth using Latitude and Longitude values)
+<p>Many practical problems involve classifying textual objects — documents, emails, sentences, tweets, etc. —
+into two specific categories — spam vs nonspam, important vs unimportant, acceptable vs inappropriate,
+etc. Naive Bayes classifiers are often used for such problems. They often use a bag-of-words model, which
+means that each object is represented as just an unordered “bag” of words, with no information about the
+grammatical structure or order of words in the document. Suppose there are classes A and B. For a given
+textual object D consisting of words w1, w2, ..., wn, a Bayesian classifier evaluates decides that D belongs to
+A by computing the “odds” and comparing to a threshold</p>
 
-<h3> Our Approach to the solution: </h3>
+<p>where P (A|w1, ...wn) is the posterior probability that D is in class A. Using the Naive Bayes assumption,
+the odds ratio can be factored into P (A), P (B), and terms of the form P (wi|A) and P (wi|B). These are
+the parameters of the Naive Bayes model.
+As a specific use case for this assignment, we’ve given you a dataset of user-generated reviews. User-generated
+reviews are transforming competition in the hospitality industry, because they are valuable for both the guest
+and the hotel owner. For the potential guest, it’s a valuable resource during the search for an overnight stay.
+For the hotelier, it’s a way to increase visibility and improve customer contact. So it really affects both the
+business and guest if people fake the reviews and try to either defame a good hotel or promote a bad one.
+Your task is to classify reviews into faked or legitimate, for 20 hotels in Chicago.</p>
 
-1.The data present in road-segments.txt and city-gps.txt is loaded into a single list which contains city,latititudes,longitudes,segments between the cities.
-2.We implemented the A* algorithm where the heuristic function used is Great Circle Distance which is admissible as it finds the straight line distance between any two cities given their latitude and longitude values and the cost functions are segments(route with fewer number of road segments), distance(route with shortest total distance), time(fastest route within the speed limit), delivery(if the speed limit between 2 cities is greater than or equal to 50 mph then there is a probablity of making a mistake which is given by tanh(l/1000 and total hours to drive would be t_road+p*2(t_road+t_trip) or probablity of mistake will be zero and time taken will be equal to t_road).
-3.Sucessor functions returns all the adjacent cities where there is a road segment from the current city. 
-4.If the latitude,longitude values of the current are missing, then we considered the latitude,longitude values of the previous city.We calculate the Great Circle distance between those previous cities values and the latitude,longitude values of the goal city, then we add the segment distance to the Great Circle distance calculated previously.
-5.For the cost function 'segments', we calculate the f-score=h-score+cost where ;f-score=(h-score/max_segment)+(total_segments) ;h-score= Great Circle Distance from current city to goal city max_segement = maximum number of segments for a city in the road-segments.txt ;total_segments= number of segments in the route taken to reach the city
-6.For the cost function 'Time', we calculate the f-score=h-score+cost where ;f-score=(h-score/max_speed)+succesor_city ; h-score= Great Circle Distance from current city to goal city  max_speed=road segment with the maximum speed limit in road-segments.txt
-7. For the cost function 'Distance', we calculate the f-score=h-score+cost ;f-score=h-score+distance to reach the current city from previous city ;h-score=Great Circle Distance from current city to goal city 
-8. For the cost function 'Distance', we calculate the f-score=h-score+cost;f-score=(h-score/max_speed)+cost ;cost= t_road+(p*2*(t_road+t_trip))
+
+<h3>Approach<h3>
+<p>Initially, prepocessing the data by cleaning the train_data by removing stop words(most frequently used english word) which may result into wrong classification. Converting everything into lowercase letters by removing alpha-numeric characters in the train_data which results in improving accuracy of classification.</p><br>
+<p>After cleaning the data, maintaining the occurrences of each words with label in a dictionary to look up when needed.</p><br>
+<p>Applying Baye's rule to calculate posterior probability P(label|review_words) <i>i.e P(label|review_words)= P(review_words|label) *P(label). </i></p><br>
+<p>Here, labels are Truth and deceptive. We ignore denominator P(review_words) in Bayes rule, because it is the same for both labels.</p>
+<br>
+<p>Based on the independence assumption in Baye's law, P(review_words|label) can be written as the product: P(w1|label)*.... * P(wn|label), for all words in the review. P(w1|label) is the frequency of word associated with the label, divided by all words associated with the label.
+</p><br>
+<p>In our first attempt, we got an classification accuracy of around 52%.</p>
+<p>To improve accuracy and to handle zero word occurrencies which result in zero probability, used <i>Laplace smoothing</i> technique. Which will push the likelihood towards a values of 0.5 when using higher alpha values(1 in my case) and denominator is added with k*aplha where k is 2 i.e., the probability of a word equal to 0.5 for both the labels.</p><br>
+<p>In our second attempt after introducing Laplace smmothing, we got an classification accuracy of around 78%.</p><br>
+<p>We found that multiplying very small numbers will lead to even smaller numbers. To avoid those tried using log probabilities, which helped us in increasing accuracy to 85.75%.</p>
+
+<b>For introducing log probabilites, We need to remember that multiplication operation becomes an addition in the logarithm space. So, taking the logarithm of the whole equation gives us below equation such as:</b><br>
+<img src="https://github.iu.edu/cs-b551-fa2021/pdasari-hkande-hagana-a2/blob/master/part3/Log%20Probability%20formula.png"></img>
+
+<p>References:</p>
+For log Probabilites: https://www.baeldung.com/cs/naive-bayes-classification-performance
+<br>
+https://monkeylearn.com/blog/practical-explanation-naive-bayes-classifier/
