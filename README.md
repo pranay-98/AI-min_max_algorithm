@@ -131,9 +131,6 @@ Your task is to classify reviews into faked or legitimate, for 20 hotels in Chic
 <p>In our second attempt after introducing Laplace smmothing, we got an classification accuracy of around 78%.</p><br>
 <p>We found that multiplying very small numbers will lead to even smaller numbers. To avoid those tried using log probabilities, which helped us in increasing accuracy to 85.75%.</p>
 
-<b>For introducing log probabilites, We need to remember that multiplication operation becomes an addition in the logarithm space. So, taking the logarithm of the whole equation gives us below equation such as:</b><br>
-<img src="https://github.iu.edu/cs-b551-fa2021/pdasari-hkande-hagana-a2/blob/master/part3/Log%20Probability%20formula.png"></img>
-
 <p>References:</p>
 For log Probabilites: https://www.baeldung.com/cs/naive-bayes-classification-performance
 <br>
