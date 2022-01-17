@@ -1,3 +1,4 @@
+
 ## Approach to Part 1: Raichu
 <h2>Problem Statement</h2>
 <p>Raichu is a popular childhood game played on an n ×n grid (where n ≥ 8 is an even number) with three
@@ -96,7 +97,7 @@ Calculating the weighted difference between left over pieces on board of each pl
 
 ## Approach to Part 3: Truth be Told
 
-<h3>Problem statement<h3>
+<h3>Problem statement</h3>
 
 <p>Many practical problems involve classifying textual objects — documents, emails, sentences, tweets, etc. —
 into two specific categories — spam vs nonspam, important vs unimportant, acceptable vs inappropriate,
@@ -137,3 +138,6 @@ Your task is to classify reviews into faked or legitimate, for 20 hotels in Chic
 For log Probabilites: https://www.baeldung.com/cs/naive-bayes-classification-performance
 <br>
 https://monkeylearn.com/blog/practical-explanation-naive-bayes-classifier/
+
+    
+
